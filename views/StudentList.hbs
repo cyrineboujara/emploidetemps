@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Admin - Emploi du Temps</title>
+
+    <!-- Vendor CSS Files -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .select-departement {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .select-departement select,
+        .select-departement button {
+            margin: 0 10px;
+            border-radius: 20px;
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s;
+        }
+
+        .select-departement button {
+            background-color: #5b97d3;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .select-departement button:hover {
+            background-color: #4a86c4;
+        }
+
+        .table thead th {
+            background-color: #5b97d3;
+            color: #fff;
+            text-align: center;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2 class="mb-4">Emploi du Temps - Sélectionnez votre Classe</h2>
+
+        <!-- Sélection du Département et de la Classe avec un Bouton -->
+        <div class="select-departement">
+            <select id="departement" onchange="updateClasses()">
+                <option value="">-- Choisir un département --</option>
+                <option value="informatique">Technologie Informatique</option>
+                <option value="electrique">Génie Électrique</option>
+                <option value="mecanique">Génie Mécanique</option>
+                <option value="civil">Génie Civil</option>
+            </select>
+            <select id="classe">
+                <option value="">-- Choisir une classe --</option>
+            </select>
+            <button onclick="showSchedule()">Afficher l'emploi du temps</button>
+        </div>
+
+        <!-- Contenu de l'Emploi du Temps -->
+        <div class="header-info" id="scheduleInfo" style="display: none;">
+            <h2 id="scheduleTitle"></h2>
+            <p>Institut Supérieur des Études Technologiques de Tozeur</p>
+            <p id="departementName"></p>
+            <p id="classeName"></p>
+        </div>
+
+        <!-- Tableau d'Emploi du Temps -->
+        <table class="table table-hover table-bordered table-striped" id="scheduleTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Jour</th>
+                    <th>8h30 - 10h00</th>
+                    <th>10h10 - 11h40</th>
+                    <th>11h50 - 13h20</th>
+                    <th>14h30 - 16h00</th>
+                    <th>16h10 - 17h40</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les lignes de l'emploi du temps seront insérées ici par JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Espace Admin. Tous droits réservés.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const schedules = {
+            informatique: {
+                TI: [
+                    ["Lundi", "Mathématiques<br>Salle 201<br>M.cherif", "Informatique<br>Salle 203<br>M.dawed", "", "base<br>Salle 202<br>M.salah", "",],
+                    ["Mardi", "Algorithmique<br>Salle 204<br>M.cyrine", "Programmation<br>Salle 205<br>M.salah", "", "Anglais<br>Salle 206<br>M.ghattassi", ""],
+                    ["Mercredi", "Mathématiques<br>Salle 201<br>M.salim", "Bases de données<br>Salle 203<br>M.rayen", "", "base<br>Salle 202<br>M.ghattassi", ""],
+                    ["Jeudi", "Algorithmique<br>Salle 204<br>M.ghattassi", "Informatique<br>Salle 205<br>M.jerid", "", "Anglais<br>Salle 206<br>M.henchi", ""],
+                    ["Vendredi", "Mathématiques<br>Salle 201<br>M.hamed", "", "", "Programmation<br>Salle 205<br>M.salem", ""]
+                ],
+                DSI: [
+                    ["Lundi", "Mathématiques<br>Salle 201<br>M.cherif", "POO<br>Salle 203<br>M.dawed", "", "Physique<br>Salle 202<br>M.salah", "",],
+                    ["Mardi", "Algorithmique<br>Salle 204<br>M.cyrine", "Programmation<br>Salle 205<br>M.salah", "", "Anglais<br>Salle 206<br>M.ghattassi", ""],
+                    ["Mercredi", "Mathématiques<br>Salle 201<br>M.salim", "Bases de données<br>Salle 203<br>M.rayen", "", "Physique<br>Salle 202<br>M.ghattassi", ""],
+                    ["Jeudi", "Algorithmique<br>Salle 204<br>M.ghattassi", "POO<br>Salle 205<br>M.jerid", "", "Anglais<br>Salle 206<br>M.henchi", ""],
+                    ["Vendredi", "Mathématiques<br>Salle 201<br>M.hamed", "", "", "Programmation<br>Salle 205<br>M.salem", ""]
+                ],
+                RSI: [
+                  ["Lundi", "reseau<br>Salle 201<br>M.cherif", "Informatique<br>Salle 203<br>M.dawed", "", "SOA<br>Salle 202<br>M.salah", "",],
+                    ["Mardi", "Algorithmique<br>Salle 204<br>M.cyrine", "Programmation<br>Salle 205<br>M.salah", "", "Anglais<br>Salle 206<br>M.ghattassi", ""],
+                    ["Mercredi", "reseau<br>Salle 201<br>M.salim", "Bases de données<br>Salle 203<br>M.rayen", "", "SOA<br>Salle 202<br>M.ghattassi", ""],
+                    ["Jeudi", "Algorithmique<br>Salle 204<br>M.ghattassi", "Informatique<br>Salle 205<br>M.jerid", "", "Anglais<br>Salle 206<br>M.henchi", ""],
+                    ["Vendredi", "reseau<br>Salle 201<br>M.hamed", "", "", "Programmation<br>Salle 205<br>M.salem", ""]
+                ]
+            },
+            electrique: {
+                GE: [
+                   ["Lundi", "Mathématiques<br>Salle 201<br>M.cherif", "Informatique<br>Salle 203<br>M.dawed", "", "Physique<br>Salle 202<br>M.salah", "",],
+                    ["Mardi", "Algorithmique<br>Salle 204<br>M.cyrine", "Programmation<br>Salle 205<br>M.salah", "", "Anglais<br>Salle 206<br>M.ghattassi", ""],
+                    ["Mercredi", "Mathématiques<br>Salle 201<br>M.salim", "Bases de données<br>Salle 203<br>M.rayen", "", "Physique<br>Salle 202<br>M.ghattassi", ""],
+                    ["Jeudi", "Algorithmique<br>Salle 204<br>M.ghattassi", "Informatique<br>Salle 205<br>M.jerid", "", "Anglais<br>Salle 206<br>M.henchi", ""],
+                    ["Vendredi", "Mathématiques<br>Salle 201<br>M.hamed", "", "", "Programmation<br>Salle 205<br>M.salem", ""]
+                ],
+                EI: [
+                 ["Lundi", "Mathématiques<br>Salle 201<br>M.cherif", "Informatique<br>Salle 203<br>M.dawed", "", "Physique<br>Salle 202<br>M.salah", "",],
+                    ["Mardi", "Algorithmique<br>Salle 204<br>M.cyrine", "Programmation<br>Salle 205<br>M.salah", "", "Anglais<br>Salle 206<br>M.ghattassi", ""],
+                    ["Mercredi", "Mathématiques<br>Salle 201<br>M.salim", "Bases de données<br>Salle 203<br>M.rayen", "", "Physique<br>Salle 202<br>M.ghattassi", ""],
+                    ["Jeudi", "Algorithmique<br>Salle 204<br>M.ghattassi", "Informatique<br>Salle 205<br>M.jerid", "", "Anglais<br>Salle 206<br>M.henchi", ""],
+                    ["Vendredi", "Mathématiques<br>Salle 201<br>M.hamed", "", "", "Programmation<br>Salle 205<br>M.salem", ""]
+                ]
+            },
+             civil: {
+                GC: [
+                    ["Lundi", "Mathématiques<br>Salle 201<br>M.cherif", "Informatique<br>Salle 203<br>M.dawed", "", "Physique<br>Salle 202<br>M.salah", "",],
+                    ["Mardi", "Algorithmique<br>Salle 204<br>M.cyrine", "Programmation<br>Salle 205<br>M.salah", "", "Anglais<br>Salle 206<br>M.ghattassi", ""],
+                    ["Mercredi", "Mathématiques<br>Salle 201<br>M.salim", "Bases de données<br>Salle 203<br>M.rayen", "", "Physique<br>Salle 202<br>M.ghattassi", ""],
+                    ["Jeudi", "Algorithmique<br>Salle 204<br>M.ghattassi", "Informatique<br>Salle 205<br>M.jerid", "", "Anglais<br>Salle 206<br>M.henchi", ""],
+                    ["Vendredi", "Mathématiques<br>Salle 201<br>M.hamed", "", "", "Programmation<br>Salle 205<br>M.salem", ""]
+                ],
+                  BAT: [
+                   ["Lundi", "Mathématiques<br>Salle 201<br>M.cherif", "Informatique<br>Salle 203<br>M.dawed", "", "Physique<br>Salle 202<br>M.salah", "",],
+                    ["Mardi", "Algorithmique<br>Salle 204<br>M.cyrine", "Programmation<br>Salle 205<br>M.salah", "", "Anglais<br>Salle 206<br>M.ghattassi", ""],
+                    ["Mercredi", "Mathématiques<br>Salle 201<br>M.salim", "Bases de données<br>Salle 203<br>M.rayen", "", "Physique<br>Salle 202<br>M.ghattassi", ""],
+                    ["Jeudi", "Algorithmique<br>Salle 204<br>M.ghattassi", "Informatique<br>Salle 205<br>M.jerid", "", "Anglais<br>Salle 206<br>M.henchi", ""],
+                    ["Vendredi", "Mathématiques<br>Salle 201<br>M.hamed", "", "", "Programmation<br>Salle 205<br>M.salem", ""]
+                ]
+            },
+             mecanique: {
+                GM: [
+                 ["Lundi", "Mathématiques<br>Salle 201<br>M.cherif", "Informatique<br>Salle 203<br>M.dawed", "", "Physique<br>Salle 202<br>M.salah", "",],
+                    ["Mardi", "Algorithmique<br>Salle 204<br>M.cyrine", "Programmation<br>Salle 205<br>M.salah", "", "Anglais<br>Salle 206<br>M.ghattassi", ""],
+                    ["Mercredi", "Mathématiques<br>Salle 201<br>M.salim", "Bases de données<br>Salle 203<br>M.rayen", "", "Physique<br>Salle 202<br>M.ghattassi", ""],
+                    ["Jeudi", "Algorithmique<br>Salle 204<br>M.ghattassi", "Informatique<br>Salle 205<br>M.jerid", "", "Anglais<br>Salle 206<br>M.henchi", ""],
+                    ["Vendredi", "Mathématiques<br>Salle 201<br>M.hamed", "", "", "Programmation<br>Salle 205<br>M.salem", ""]
+                ],
+                  MT: [
+                  ["Lundi", "Mathématiques<br>Salle 201<br>M.cherif", "Informatique<br>Salle 203<br>M.dawed", "", "Physique<br>Salle 202<br>M.salah", "",],
+                    ["Mardi", "Algorithmique<br>Salle 204<br>M.cyrine", "Programmation<br>Salle 205<br>M.salah", "", "Anglais<br>Salle 206<br>M.ghattassi", ""],
+                    ["Mercredi", "Mathématiques<br>Salle 201<br>M.salim", "Bases de données<br>Salle 203<br>M.rayen", "", "Physique<br>Salle 202<br>M.ghattassi", ""],
+                    ["Jeudi", "Algorithmique<br>Salle 204<br>M.ghattassi", "Informatique<br>Salle 205<br>M.jerid", "", "Anglais<br>Salle 206<br>M.henchi", ""],
+                    ["Vendredi", "Mathématiques<br>Salle 201<br>M.hamed", "", "", "Programmation<br>Salle 205<br>M.salem", ""]
+                ]
+            },
+        };
+
+        function updateClasses() {
+            const department = document.getElementById("departement").value;
+            const classeSelect = document.getElementById("classe");
+
+            classeSelect.innerHTML = ""; // Reset the classes options
+
+            if (department) {
+                const classes = Object.keys(schedules[department]);
+                classes.forEach(function (classe) {
+                    const option = document.createElement("option");
+                    option.value = classe;
+                    option.text = classe;
+                    classeSelect.appendChild(option);
+                });
+            }
+        }
+
+        function showSchedule() {
+            const department = document.getElementById("departement").value;
+            const classe = document.getElementById("classe").value;
+            const table = document.getElementById("scheduleTable");
+            const scheduleInfo = document.getElementById("scheduleInfo");
+
+            if (!department || !classe) {
+                alert("Veuillez sélectionner un département et une classe.");
+                return;
+            }
+
+            // Show schedule info
+            scheduleInfo.style.display = "block";
+            document.getElementById("scheduleTitle").innerText = "Emploi du Temps " + classe;
+            document.getElementById("departementName").innerText = "Département : " + department.charAt(0).toUpperCase() + department.slice(1);
+            document.getElementById("classeName").innerText = "Classe : " + classe;
+
+            // Display schedule table
+            const schedule = schedules[department][classe];
+            let rows = "";
+            schedule.forEach(function (row) {
+                rows += `<tr>
+                            <td>${row[0]}</td>
+                            <td>${row[1]}</td>
+                            <td>${row[2]}</td>
+                            <td>${row[3]}</td>
+                            <td>${row[4]}</td>
+                            <td>${row[5]}</td>
+                        </tr>`;
+            });
+            table.querySelector("tbody").innerHTML = rows;
+            table.style.display = "table";
+        }
+    </script>
+</body>
+
+</html>

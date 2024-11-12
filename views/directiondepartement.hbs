@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Admin - Chef de Département</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Poppins:wght@100;200;300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h2 {
+            font-size: 32px;
+            color: #5b97d3;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn-wrapper {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 220px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-wrapper:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-wrapper i {
+            font-size: 40px;
+            color: #5b97d3;
+            margin-bottom: 10px;
+        }
+
+        .btn-wrapper p {
+            font-size: 18px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .btn-wrapper a {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #5b97d3;
+            color: #fff;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-wrapper a:hover {
+            background-color: #4678a3;
+        }
+
+        /* Timetable selection form */
+        #timetable-selection-form {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .btn-primary {
+            background-color: #5b97d3;
+            border: none;
+            padding: 10px 20px;
+            color: #fff;
+            font-size: 18px;
+            border-radius: 30px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #4678a3;
+        }
+
+        /* Hidden forms for Department, Teacher, and Room selections */
+        #department-selection, #teacher-selection, #room-selection {
+            display: none;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sidebar style */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 250px;
+            background-color: #343a40;
+            padding-top: 60px;
+            z-index: 1000;
+            transform: translateX(-250px);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar a {
+            padding: 15px 20px;
+            font-size: 18px;
+            color: white;
+            display: block;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #5b97d3;
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 30px;
+            color: #5b97d3;
+            cursor: pointer;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #777;
+        }
+
+        footer p {
+            font-size: 14px;
+            font-weight: 400;
+        }
+          /* Partie Choisir Option - Ajout de l'espacement et du centrage */
+    #timetable-selection-options {
+        display: none;
+        margin-top: 60px; /* Ajoute un espacement vers le bas */
+        text-align: center; /* Centre le texte */
+    }
+
+    #timetable-selection-options h3 {
+        font-size: 24px;
+        color: #5b97d3;
+        font-weight: 600;
+        margin-bottom: 30px; /* Ajoute un espacement entre le titre et les boutons */
+    }
+
+    .btn-primary {
+        margin-bottom: 20px; /* Ajoute de l'espace entre chaque bouton */
+        padding: 12px 30px;
+        background-color: #5b97d3;
+        border: none;
+        color: white;
+        font-size: 18px;
+        border-radius: 30px;
+        transition: background-color 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .btn-primary:hover {
+        background-color: #4678a3;
+    }
+
+    .btn-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centre les boutons horizontalement */
+        gap: 15px; /* Ajoute de l'espace entre les boutons */
+    }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <a href="registerStudents"><i class="fas fa-user-plus"></i> S'inscrire étudiants</a>
+        <a href="registerTeachers"><i class="fas fa-chalkboard-teacher"></i> S'inscrire professeurs</a>
+        <a href="AbsenceList"><i class="fas fa-list"></i> Liste des absences</a>
+        <a href="adminlist"><i class="fas fa-calendar-alt"></i> Sélectionner emploi du temps</a>
+        <a href="adminlist"><i class="fas fa-building"></i> Emploi du temps par classe</a>
+        <a href="adminlist"><i class="fas fa-door-open"></i> Emploi du temps par salle</a>
+        <a href="adminlist"><i class="fas fa-user-tie"></i> Emploi du temps par enseignant</a>
+    </div>
+
+    <!-- Main content -->
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h2>Bienvenue dans l'Espace Admin</h2>
+            <p>Gérez les absences des étudiants et facilitez le suivi académique de manière efficace et professionnelle.</p>
+        </div>
+
+        <!-- Button Section -->
+        <div class="button-container">
+            <div class="btn-wrapper">
+                <i class="fas fa-user-plus"></i>
+                <p>Pour inscrire de nouveaux étudiants :</p>
+                <a href="registerStudents">S'inscrire étudiants</a>
+            </div>
+            <div class="btn-wrapper">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <p>Pour inscrire de nouveaux professeurs :</p>
+                <a href="registerTeachers">S'inscrire professeurs</a>
+            </div>
+            <div class="btn-wrapper">
+                <i class="fas fa-list"></i>
+                <p>Pour consulter la liste des absences :</p>
+                <a href="AbsenceList" onclick="showSelectionOptions()">Liste des absences des étudiants</a>
+            </div>
+            <div class="btn-wrapper">
+                <i class="fas fa-calendar-alt"></i>
+                <p>Pour sélectionner l'emploi du temps :</p>
+                <a href="javascript:void(0);" onclick="showSelectionOptions()">Sélectionner emploi du temps</a>
+            </div>
+        </div>
+
+        <!-- Timetable Selection Options -->
+       <!-- Timetable Selection Options -->
+<div id="timetable-selection-options" style="display: none;">
+    <h3>Choisir une option</h3>
+    <div class="btn-container">
+        <button class="btn btn-primary" onclick="showDepartmentSelection()">Sélectionner par Département</button>
+        <button class="btn btn-primary" onclick="showTeacherSelection()">Sélectionner par Enseignant</button>
+        <button class="btn btn-primary" onclick="showRoomSelection()">Sélectionner par Salle</button>
+    </div>
+</div>
+
+
+        <!-- Forms for Department, Teacher, and Room selections -->
+       <!-- Formulaire pour sélectionner Département et Classe -->
+<div id="department-selection">
+    <h4>Sélectionner Département et Classe</h4>
+    <div class="form-group">
+        <select id="department-select" onchange="updateClassOptions()">
+            <option value="TI">Technologie Informatique</option>
+            <option value="GE">Génie Électrique</option>
+            <option value="GM">Génie Mécanique</option>
+            <option value="GC">Génie Civil</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <select id="class-select">
+            <!-- Les options de classe seront mises à jour dynamiquement -->
+        </select>
+    </div>
+    <button class="btn btn-primary">Soumettre</button>
+</div>
+
+<script>
+    function updateClassOptions() {
+        const department = document.getElementById('department-select').value;
+        const classSelect = document.getElementById('class-select');
+
+        // Effacer les options précédentes
+        classSelect.innerHTML = '';
+
+        let options = [];
+        if (department === 'TI') {
+            options = ['TI', 'DSI', 'RSI'];
+        } else if (department === 'GE') {
+            options = ['GE', 'EI'];
+        } else if (department === 'GM') {
+            options = ['GM', 'MI'];
+        } else if (department === 'GC') {
+            options = ['GC', 'BAT'];
+        }
+
+        // Ajouter les nouvelles options
+        options.forEach(option => {
+            const opt = document.createElement('option');
+            opt.value = option;
+            opt.textContent = option;
+            classSelect.appendChild(opt);
+        });
+    }
+</script>
+
+
+        <div id="teacher-selection">
+            <h4>Sélectionner Enseignant</h4>
+            <div class="form-group">
+                <select>
+                    <option value="enseignant1">Enseignant 1</option>
+                    <option value="enseignant2">Enseignant 2</option>
+                    <option value="enseignant3">Enseignant 3</option>
+                </select>
+            </div>
+            <button class="btn btn-primary">Soumettre</button>
+        </div>
+
+        <div id="room-selection">
+            <h4>Sélectionner Salle</h4>
+            <div class="form-group">
+                <select>
+                    <option value="salle1">Salle 1</option>
+                    <option value="salle2">Salle 2</option>
+                    <option value="salle3">Salle 3</option>
+                </select>
+            </div>
+            <button class="btn btn-primary">Soumettre</button>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2024. Développement de l'application de gestion.</p>
+        </footer>
+    </div>
+
+    <script>
+        function showSelectionOptions() {
+            document.getElementById('timetable-selection-options').style.display = 'block';
+        }
+
+        function showDepartmentSelection() {
+            document.getElementById('department-selection').style.display = 'block';
+            document.getElementById('teacher-selection').style.display = 'none';
+            document.getElementById('room-selection').style.display = 'none';
+        }
+
+        function showTeacherSelection() {
+            document.getElementById('teacher-selection').style.display = 'block';
+            document.getElementById('department-selection').style.display = 'none';
+            document.getElementById('room-selection').style.display = 'none';
+        }
+
+        function showRoomSelection() {
+            document.getElementById('room-selection').style.display = 'block';
+            document.getElementById('department-selection').style.display = 'none';
+            document.getElementById('teacher-selection').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>
